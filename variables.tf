@@ -60,3 +60,8 @@ variable "authkey" {
   type        = string
   description = "The pre-auth key retrieved from the tailscale console which allows to authenticate a new device without an interactive login."
 }
+
+variable "tailscale_tags" {
+  default = []
+  type    = list(string)
+}
