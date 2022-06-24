@@ -1,5 +1,5 @@
 module "instance_label" {
-  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
+  source = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
   name   = "tailscale-relay"
 
   additional_tag_map = {
