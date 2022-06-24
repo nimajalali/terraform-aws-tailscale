@@ -13,6 +13,13 @@ locals {
   tailscale_tags = join(",", [
     for t in values(module.this.tags) : replace("tag:${t}", "_", "-")
   ])
+  userdata = templatefile("${path.module}/userdata.sh.tpl", {
+    yum_repo = var.yum_repo
+    routes   = join(",", var.advertise_routes)
+    tags     = local.tailscale_tags
+    authkey  = var.authkey
+    hostname = module.this.id
+  })
 }
 
 # Most recent Amazon Linux 2 AMI
@@ -31,23 +38,12 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-data "template_file" "userdata" {
-  template = file("${path.module}/userdata.sh.tpl")
-  vars = {
-    yum_repo = var.yum_repo
-    routes   = join(",", var.advertise_routes)
-    tags     = local.tailscale_tags
-    authkey  = var.authkey
-    hostname = module.this.id
-  }
-}
-
 resource "aws_launch_template" "default" {
   name_prefix   = module.this.id
   image_id      = var.ami != "" ? var.ami : data.aws_ami.amazon_linux_2.id
   instance_type = var.instance_type
   key_name      = var.key_pair_name
-  user_data     = base64encode(data.template_file.userdata.rendered)
+  user_data     = base64encode(local.userdata)
 
   monitoring {
     enabled = true
