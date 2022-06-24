@@ -11,7 +11,7 @@ module "instance_label" {
 
 locals {
   tailscale_tags = join(",", [
-    for t in values(module.this.tags) : replace("tag:${t}", "_", "-")
+    for t in values(var.tailscale_tags) : replace("tag:${t}", "_", "-")
   ])
   userdata = templatefile("${path.module}/userdata.sh.tpl", {
     yum_repo = var.yum_repo
